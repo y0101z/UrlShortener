@@ -20,7 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /*
- * This class is just my old playground for some misc. operations * 
+ * This class is just my old toy box for some misc. operations * 
  */
 public class Utilities
 {
@@ -52,7 +52,9 @@ public class Utilities
 
 	public static String getRandomFileName(String extension)
 	{
-		return Utilities.getAlphaNumericString(5) + " " + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Calendar.getInstance().getTime()).toString() + extension;
+		return Utilities.getAlphaNumericString(5) + " " + 
+				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").
+				format(Calendar.getInstance().getTime()).toString() + extension;
 	}
 
 	public static <T> boolean isValidCollection(List<T> collection)

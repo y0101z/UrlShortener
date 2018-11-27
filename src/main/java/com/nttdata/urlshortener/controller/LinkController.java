@@ -122,7 +122,7 @@ public class LinkController
 
 	// This scheduled task will read acquired in memory clicks
 	// and store them into DB once in 30 min
-	@Scheduled(cron = "0/30 * * * * ?")
+	@Scheduled(fixedRate = 1800000)
 	private void storeClicks()
 	{
 		int totalClicks = 0;
@@ -150,7 +150,7 @@ public class LinkController
 	
 	
 	
-	/********************************* VARIOUS METHODS FOR DEVELOPMENT AND TESTING *****************************/
+	/********************************* VARIOUS METHODS FOR DEVELOPMENT AND TESTING. ONE CAN SAFELY DELETE THEM *****************************/
 
 	@RequestMapping(path = "/links", method = RequestMethod.GET)
 	private ResponseEntity<List<Link>> getAll()

@@ -127,14 +127,4 @@ public class Link implements Serializable
 	{
 		this.clicks = clicks;
 	}
-	public static void createDummyLink(String shortUrl)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-		
-	
-	
-
 }

@@ -3,10 +3,14 @@ package com.nttdata.urlshortener.utilities;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+* This class encapsulates all routines needed to generate 8 character long key 
+* to construct short URL
+*/
 public class UrlReducer
 {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -16,21 +20,30 @@ public class UrlReducer
 	// url-key map to quickly check whether an url is already entered in our system
 	private HashMap<String, String> urlKeyMap = new HashMap<String, String>();
 	// used to generate URLs for a custom domain name
-	private String domain; 
+	private String domain;
 	// array for character to number mapping
-	private char charBuffer[] = new char[62];; 
+	private char charBuffer[] = new char[62];;
 	// generate random integers
-	private Random random = new Random(); 
+	private Random random = new Random();
 	// the key length in URL
-	private int KEY_LENGTH = 7; 
+	private int KEY_LENGTH = 7;
 
-	// base URL name
+	/**
+	 * Class constructor.
+	 * 
+	 * @param (domain) (It is a domain name of current application)
+	 */
 	public UrlReducer(String domain)
 	{
-		this.domain = cleanUrl(domain);	
+		this.domain = cleanUrl(domain);
 		populateCharBuffer();
 	}
 
+	/**
+	 * this method randomly fill s buffer for key generation routine
+	 * 
+	 * @return (void)
+	 */
 	private void populateCharBuffer()
 	{
 		for (int i = 0; i < 62; i++)
@@ -43,38 +56,57 @@ public class UrlReducer
 			else
 				n = i + 61;
 			charBuffer[i] = (char) n;
-		}	
+		}
 	}
-	
+
+	/**
+	 * This is a wrapper method for all key generation procedures
+	 *
+	 * @param (longURL) (Original long URL supplied by user)
+	 * @return (reducedUrl) (reduced URL)
+	 */
 	public String reduceUrl(String longURL)
 	{
 		String reducedUrl = "";
 		if (isUrlValid(longURL))
 		{
-			longURL = cleanUrl(longURL);			
-			reducedUrl = urlKeyMap.containsKey(longURL) ? urlKeyMap.get(longURL) : getKey(longURL);
+			longURL = cleanUrl(longURL);
+			// create a new key if it is not stored in collection
+			// otherwise reuse from collection
+			reducedUrl = urlKeyMap.containsKey(longURL) ? urlKeyMap.get(longURL) : createKey(longURL);
 		}
 		return reducedUrl;
 	}
-	
-	public String expandURL(String shortURL)
+
+	/**
+	 * This is a key generating reverse routine for testing purposes only,
+	 * It's never used in the application
+	 *
+	 * @param (shortURL) (reduced URL)
+	 * @return (longURL) (Original long URL supplied by user)
+	 */
+	public String expandURL(String reducedUrl)
 	{
 		String longURL = "";
-		String key = shortURL.substring(domain.length() + 1);
+		String key = reducedUrl.substring(domain.length() + 1);
 		longURL = keyUrlMap.get(key);
 		return longURL;
 	}
 
-	/*
-	 * This method is not implemented correctly.
-	 * Should take URLs with tracing slashes '/'
+	/**
+	 * This is a standard way to validate URL.
+	 * Exception is not a very clean way to do validation.
+	 * Using exception in program flow control is considered as ANTIPATTERN.
+	 *
+	 * @param (longUrl) (Original long URL supplied by user)
+	 * @return (valid) (true if valid, otherwise false)
 	 */
-	boolean isUrlValid(String urlString)
+	boolean isUrlValid(String longUrl)
 	{
 		boolean valid = false;
 		try
 		{
-			new URL(urlString).toURI(); 
+			new URL(longUrl).toURI();
 			valid = true;
 		}
 		catch (Exception e)
@@ -83,29 +115,51 @@ public class UrlReducer
 		}
 		return valid;
 	}
-	
+
+	/**
+	 * This method removes all fancy parts from URL.
+	 * leaving 8 characters only
+	 *
+	 * @param (url) (any URL string)
+	 * @return (url) (cleaned url string)
+	 */
 	String cleanUrl(String url)
 	{
-		if (url.substring(0, 7).equals("http://"))
-			url = url.substring(7);
+		String http = "http://";
+		String https = "https://";
+		char slash = '/';
+		
+		if (url.substring(0, http.length()).equals(http))
+			url = url.substring(http.length());
 
-		if (url.substring(0, 8).equals("https://"))
-			url = url.substring(8);
+		if (url.substring(0, https.length()).equals(https))
+			url = url.substring(https.length());
 
-		if (url.charAt(url.length() - 1) == '/')
+		if (url.charAt(url.length() - 1) == slash)
 			url = url.substring(0, url.length() - 1);
 		return url;
 	}
 
-	private String getKey(String longURL)
+	/**
+	 * This method stores generated key into two cross-maps.
+	 *
+	 * @param (longURL) (Original long URL supplied by user)
+	 * @return (key) (generated key string)
+	 */
+	private String createKey(String longURL)
 	{
-		String key = createKey();
+		String key = generateKey();
 		keyUrlMap.put(key, longURL);
 		urlKeyMap.put(longURL, key);
 		return key;
 	}
 
-	private String createKey()
+	/**
+	 * This method generates key randomly taking characters from buffer
+	 *
+	 * @return (key) (generated key string)
+	 */
+	private String generateKey()
 	{
 		String key = "";
 		while (true)
@@ -119,7 +173,8 @@ public class UrlReducer
 		return key;
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**************************** all stuff below is just Yuri's playground. One can safely delete it  *********/
+	
 	private static final String ALPHABET_MAP = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	private static final int BASE = ALPHABET_MAP.length();
 
@@ -155,7 +210,8 @@ public class UrlReducer
 		System.out.println("Decoding for b9 is " + decode("b9"));
 
 		String urls[] =
-		{ "http://www.geeksforgeeks.org/", "http://www.google.com/", "http://www.google.com", "http://www.yahoo.com", "http://www.yahoo.com/", "http://www.amazon.com", "http://www.amazon.com/page1.php", "http://www.amazon.com/page2.php", "http://www.flipkart.in", "http://www.rediff.com", "http://www.techmeme.com", "http://www.techcrunch.com", "http://www.lifehacker.com", "http://www.icicibank.com", "http://asdfasdf.com" };
+		{ "http://www.geeksforgeeks.org/", "http://www.google.com/", "http://www.google.com", "http://www.yahoo.com", "http://www.yahoo.com/", "http://www.amazon.com", "http://www.amazon.com/page1.php", "http://www.amazon.com/page2.php", "http://www.flipkart.in", "http://www.rediff.com",
+				"http://www.techmeme.com", "http://www.techcrunch.com", "http://www.lifehacker.com", "http://www.icicibank.com", "http://asdfasdf.com" };
 
 		for (int i = 0; i < urls.length; i++)
 		{
