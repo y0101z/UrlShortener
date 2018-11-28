@@ -41,4 +41,4 @@ Using the following endpoints, different operations can be achieved, but only 3 
  
 ## Deployment steps for Cloud Foundry
  - `cf push spring-boot -p UrlShortener.jar`  - Deploy the jar into Cloud Foundry.
- - In case you need to change the buildpacks. Use `-b https://github.com/cloudfoundry/UrlShortener.jar.git#v3.7`
+ 
