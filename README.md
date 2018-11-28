@@ -8,7 +8,7 @@ This Project shows the set of web REST methods to shorten long URL using Base 62
 Using the following endpoints, different operations can be achieved, but only 3 of them considered as main methods :
  - `/create` - This accepts long URL, generates short URL, and stores it into MongoDB. HttpStatus returned.
  - `/longurl/{shortUrl}` - This retrieves original long URL from MongoDB, and redirects to original URL
- - `"/stats/{shortUrl}` - This returns statistics for the specific short URL clicked.
+ - `/stats/{shortUrl}` - This returns statistics for the specific short URL clicked.
  
  Helper methods :
  - `/links` - This returns the all link objects from MOngoDBL
